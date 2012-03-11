@@ -1,5 +1,6 @@
 package me.odium.simplechatchannels;
 
+import java.util.List;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -29,8 +30,9 @@ public class ServerChatPlayerListener implements Listener {
 	      String Chan = plugin.ChannelThing.get(player);
 	      Player[] players = Bukkit.getOnlinePlayers();
 	      log.info("[" + p.getName() + "]" + message + " --> "+ Chan);
+	      List<String> ChanList = plugin.getStorageConfig().getStringList(Chan+".list");
 	      for(Player op: players){
-	        if(op.hasPermission("OpTalk.chat")) {
+	        if(ChanList.contains(op.getName())) {
 	          op.sendMessage(plugin.AQUA + "[" + plugin.GREEN + Chan + plugin.AQUA + "/" + p.getDisplayName() + "]" + ChatColor.GREEN + " " + message);
 	        }
 	      }

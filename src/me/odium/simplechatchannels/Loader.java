@@ -169,7 +169,7 @@ public class Loader extends JavaPlugin {
       String ChanName = args[0];
       List<String> ChowList = getStorageConfig().getStringList(ChanName+".owner");
       List<String> ChannelsList = getStorageConfig().getStringList("Channels"); // create/get the channel list
-      if (!ChowList.contains(player.getName()) && !player.hasPermission("ochat.admin")) {
+      if (!ChowList.contains(player.getName()) && !player.hasPermission("scc.admin")) {
         sender.sendMessage(GRAY + "You are not an owner of " + RED + "#" + ChanName);
         return true;
       }
@@ -186,7 +186,7 @@ public class Loader extends JavaPlugin {
     }
 
     if(cmd.getName().equalsIgnoreCase("chanlist")){
-      if(!player.hasPermission("odichat.list")) {
+      if(!player.hasPermission("scc.list")) {
         sender.sendMessage(RED + "No Permission");
       }
       if(args.length == 0) {
@@ -236,7 +236,7 @@ public class Loader extends JavaPlugin {
       }      
       String ChanName = args[0];
       List<String> ChowList = getStorageConfig().getStringList(ChanName+".owner");
-      if (!ChowList.contains(player.getName()) && !player.hasPermission("ochat.admin")) {
+      if (!ChowList.contains(player.getName()) && !player.hasPermission("scc.admin")) {
         sender.sendMessage(GRAY + "You are not an owner of " + RED + "#" + ChanName);
         return true;
       }
@@ -254,6 +254,8 @@ public class Loader extends JavaPlugin {
           ChList.add(AddPlayName);  // add the player to the list
           getStorageConfig().set(ChanName+".list.", ChList); // set the new list
           sender.sendMessage(GREEN + AddPlayName + GRAY + " added to " + GREEN + "#" + ChanName + "'s" + GRAY + " user list");
+          Player target = this.getServer().getPlayer(AddPlayName);
+          if(target != null) { target.sendMessage(GREEN + "* " + GRAY + "You have been added to " + GREEN + "#" + ChanName + "'s" + GRAY + " user list"); }
           saveStorageConfig();
           return true;
         }
@@ -266,12 +268,12 @@ public class Loader extends JavaPlugin {
         return true;
       }
       String ChanName = args[0];
+      String AddPlayName = myGetPlayerName(args[1]);
       List<String> ChowList = getStorageConfig().getStringList(ChanName+".owner");
-      if (!ChowList.contains(player.getName()) && !player.hasPermission("ochat.admin")) {
+      if (!ChowList.contains(player.getName()) && !player.hasPermission("scc.admin") && AddPlayName != args[1]) {
         sender.sendMessage(GRAY + "You are not an owner of " + RED + "#" + ChanName);
         return true;
       }
-      String AddPlayName = myGetPlayerName(args[1]);
       boolean ChanTemp = getStorageConfig().contains(ChanName);
       if(ChanTemp == false) {
         sender.sendMessage(RED + ChanName + GRAY + " does not exist");
@@ -285,6 +287,8 @@ public class Loader extends JavaPlugin {
           ChList.remove(AddPlayName);  // add the player to the list
           getStorageConfig().set(ChanName+".list.", ChList); // set the new list
           sender.sendMessage(GREEN + AddPlayName + GRAY + " removed From " + GREEN + "#" + ChanName + "'s" + GRAY + " user list");
+          Player target = this.getServer().getPlayer(AddPlayName);
+          if(target != null) { target.sendMessage(GREEN + "* " + GRAY + "You have been removed from " + GREEN + "#" + ChanName + "'s" + GRAY + " user list"); }
           saveStorageConfig();
           return true;
         }
@@ -299,7 +303,7 @@ public class Loader extends JavaPlugin {
       }      
       String ChanName = args[0];
       List<String> ChowList = getStorageConfig().getStringList(ChanName+".owner");
-      if (!ChowList.contains(player.getName()) && !player.hasPermission("ochat.admin")) {
+      if (!ChowList.contains(player.getName()) && !player.hasPermission("scc.admin")) {
         sender.sendMessage(GRAY + "You are not an owner of " + RED + "#" + ChanName);
         return true;
       }
@@ -316,6 +320,8 @@ public class Loader extends JavaPlugin {
           ChowList.add(AddPlayName);  // add the player to the list
           getStorageConfig().set(ChanName+".owner.", ChowList); // set the new list
           sender.sendMessage(GREEN + AddPlayName + GRAY + " added to " + GREEN + "#" + ChanName + "'s" + GRAY + " owner list");
+          Player target = this.getServer().getPlayer(AddPlayName);
+          if(target != null) { target.sendMessage(GREEN + "* " + GRAY + "You have been added to " + GREEN + "#" + ChanName + "'s" + GRAY + " owner list"); }
           saveStorageConfig();
           return true;
         }
@@ -329,7 +335,7 @@ public class Loader extends JavaPlugin {
       }
       String ChanName = args[0];
       List<String> ChowList = getStorageConfig().getStringList(ChanName+".owner");
-      if (!ChowList.contains(player.getName()) && !player.hasPermission("ochat.admin")) {
+      if (!ChowList.contains(player.getName()) && !player.hasPermission("scc.admin")) {
         sender.sendMessage(GRAY + "You are not an owner of " + RED + "#" + ChanName);
         return true;
       }
@@ -344,8 +350,10 @@ public class Loader extends JavaPlugin {
           return true;
         } else {
           ChowList.remove(AddPlayName);  // remove the player from the list
-          getStorageConfig().set(ChanName+".owner.", ChowList); // set the new list
+          getStorageConfig().set(ChanName+".owner.", ChowList); // set the new list          
           sender.sendMessage(GREEN + AddPlayName + GRAY + " removed From " + GREEN + "#" + ChanName + "'s" + GRAY + " owner list");
+          Player target = this.getServer().getPlayer(AddPlayName);
+          target.sendMessage(GREEN + "* " + GRAY + "You have been removed from " + GREEN + "#" + ChanName + "'s" + GRAY + " owner list");
           saveStorageConfig();
           return true;
         }
@@ -386,8 +394,8 @@ public class Loader extends JavaPlugin {
                 if(ChanList.contains(op.getName())) {
                   op.sendMessage(AQUA + "[" + GREEN + ChanName + AQUA + "/" + player.getDisplayName() + AQUA + "]" + ChatColor.GREEN + " " + message);              
                 }
-                return true;
               }
+              return true;
         } else {
           sender.sendMessage(RED + "You do not have access to this channel");
           return true;

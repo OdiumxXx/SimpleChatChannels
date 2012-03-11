@@ -9,7 +9,7 @@ commands:
       usage: /omenu
    addchan:
       description: fucksme
-      permission:
+      permission: scc.addchan
       usage: /ocreate <channelname>
    delchan:
       description: fucksme
@@ -33,9 +33,9 @@ commands:
       usage: /oremove <channelname> <playername>
    chanlist:
       description: fucksme
-      permission:
+      permission: scc.chanlist
       usage: /olist [channelname] [owner]
    schat:
       description: fucksme
-      permission:
+      permission: scc.chat
       usage: /schat <channelname> [message]
