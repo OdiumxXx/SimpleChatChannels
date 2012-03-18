@@ -171,6 +171,14 @@ public class Loader extends JavaPlugin {
       getStorageConfig().set("Channels", ChannelsList); // set the new list   
       saveStorageConfig();
       sender.sendMessage(GRAY + "Channel " + GREEN + "#" + ChanName + GRAY + " Created");
+      ChannelThing.put(player, args[0]);
+      pluginEnabled.put(player, true);
+      List<String> ChanList = getStorageConfig().getStringList(ChanName+".list");
+      for(Player op: players){
+        if(ChanList.contains(op.getName())) {
+          op.sendMessage(ChatColor.GOLD + "* " + GREEN + player.getDisplayName() + " Joined Channel");
+        }
+      }
       return true;
       } else if (args.length == 2 && args[1].equalsIgnoreCase("locked")) {
         String ChanName = args[0];
@@ -195,6 +203,15 @@ public class Loader extends JavaPlugin {
         getStorageConfig().set("Channels", ChannelsList); // set the new list   
         saveStorageConfig();
         sender.sendMessage(GRAY + "Locked Channel " + GREEN + "#" + ChanName + GRAY + " Created");
+        ChannelThing.put(player, args[0]);
+        pluginEnabled.put(player, true);
+        List<String> ChanList = getStorageConfig().getStringList(ChanName+".list");
+        for(Player op: players){
+          if(ChanList.contains(op.getName())) {
+            op.sendMessage(ChatColor.GOLD + "* " + GREEN + player.getDisplayName() + " Joined Channel");
+          }
+        }
+
         return true;       
       }
     }
@@ -223,8 +240,20 @@ public class Loader extends JavaPlugin {
       getStorageConfig().set("Channels", ChannelsList); // set the new list
       saveStorageConfig();
       sender.sendMessage(GRAY + "Channel " + RED + "#" + ChanName + GRAY + " Deleted");
+
+      for(Player op: players){
+        if(ChanList.contains(op.getName())) {
+          if(pluginEnabled.containsKey(op)){
+            if(pluginEnabled.get(op)){
+              pluginEnabled.put(op, false);
+              pluginEnabled.remove(op);
+            }
+          }                
+        }
+      }
       return true;
     }
+
 
     if(cmd.getName().equalsIgnoreCase("chanlist")){
       if(!player.hasPermission("scc.chanlist")) {
@@ -425,9 +454,7 @@ if(cmd.getName().equalsIgnoreCase("kuser")){
             getStorageConfig().set(ChanName+".list.", ChList); // set the new list
             saveStorageConfig();
             ChannelThing.put(player, args[0]);
-            String Chan = plugin.ChannelThing.get(player);
             pluginEnabled.put(player, true);
-            player.sendMessage(ChatColor.GOLD + "* " + GREEN + "Joined #" + Chan);
             List<String> ChanList = getStorageConfig().getStringList(ChanName+".list");
             for(Player op: players){
               if(ChanList.contains(op.getName())) {
@@ -449,13 +476,11 @@ if(cmd.getName().equalsIgnoreCase("kuser")){
           getStorageConfig().set(ChanName+".list.", ChList); // set the new list
           saveStorageConfig();
           ChannelThing.put(player, args[0]);
-          String Chan = plugin.ChannelThing.get(player);
           pluginEnabled.put(player, true);
-          player.sendMessage(ChatColor.GOLD + "* " + GREEN + "Joined #" + Chan);
           List<String> ChanList = getStorageConfig().getStringList(ChanName+".list");
           for(Player op: players){
             if(ChanList.contains(op.getName())) {
-              op.sendMessage(ChatColor.GOLD + "* " + GREEN + player.getDisplayName() + " Joined Channel");
+              op.sendMessage(ChatColor.GOLD + "* " + GREEN + player.getDisplayName() + " Joined " + ChanName);
             }
           }
         }
@@ -471,7 +496,7 @@ if(cmd.getName().equalsIgnoreCase("kuser")){
       } else {
         List<String> ChList = getStorageConfig().getStringList(ChanName+".list"); // get the player list
         if (!ChList.contains(player.getDisplayName())) {
-          sender.sendMessage(RED + player.getDisplayName() + GRAY + " is not in" + RED + "#" + ChanName);
+          sender.sendMessage(RED + player.getDisplayName() + GRAY + " is not in " + RED + "#" + ChanName);
           return true;
         } else {
           ChList.remove(player.getDisplayName());  // remove the player from the list
@@ -482,16 +507,17 @@ if(cmd.getName().equalsIgnoreCase("kuser")){
             if(pluginEnabled.get(player)){
               pluginEnabled.put(player, false);
               pluginEnabled.remove(player);
+            }
+          }
               player.sendMessage(ChatColor.GOLD + "* " + RED + "Left Channel");
-              List<String> ChanList = plugin.getStorageConfig().getStringList(ChanName+".list");
+              List<String> ChanList = getStorageConfig().getStringList(ChanName+".list");
               for(Player op: players){
                 if(ChanList.contains(op.getName())) {
                   op.sendMessage(ChatColor.GOLD + "* " + RED + player.getDisplayName() + " Left Channel");
                 }
               }
               return true;
-            }
-          }
+            
         }
       }
     }
