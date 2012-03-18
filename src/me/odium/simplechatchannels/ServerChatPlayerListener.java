@@ -29,11 +29,11 @@ public class ServerChatPlayerListener implements Listener {
 	    if(plugin.pluginEnabled.containsKey(p)){
 	      String Chan = plugin.ChannelThing.get(player);
 	      Player[] players = Bukkit.getOnlinePlayers();
-	      log.info("[" + p.getName() + "]" + message + " --> "+ Chan);
+	      log.info("[" + Chan + " / " + p.getName() + "]" + message);
 	      List<String> ChanList = plugin.getStorageConfig().getStringList(Chan+".list");
 	      for(Player op: players){
 	        if(ChanList.contains(op.getName())) {
-	          op.sendMessage(plugin.AQUA + "[" + plugin.GREEN + Chan + plugin.AQUA + "/" + p.getDisplayName() + "]" + ChatColor.GREEN + " " + message);
+	          op.sendMessage(plugin.GRAY + "[" + plugin.GREEN + Chan + plugin.GRAY + "/" + plugin.AQUA + p.getDisplayName() + plugin.GRAY + "]" + ChatColor.GREEN + " " + message);
 	        }
 	      }
 	        chat.setCancelled(true);
