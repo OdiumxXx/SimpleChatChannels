@@ -106,6 +106,13 @@ public class Loader extends JavaPlugin {
   }
 
   public void onDisable() {
+    List<String> ChansList = getStorageConfig().getStringList("Channels"); // get the channels list
+    for(String ch: ChansList){
+      List<String> PList = getStorageConfig().getStringList(ch+".list"); // get the player list
+        PList.removeAll(PList);
+      getStorageConfig().set(ch+".list.", PList); // set the new list
+    }
+    saveStorageConfig();
     PluginDescriptionFile pdfFile = this.getDescription();
     log.info(pdfFile.getName() + " is now disabled.");
   }
@@ -121,14 +128,6 @@ public class Loader extends JavaPlugin {
       player = (Player) sender;
     }
 
-//    if(cmd.getName().equalsIgnoreCase("ch")){
-//      if(args[0] == "create"){
-//        String name = args[1];
-//        if(player != null)
-//          channel.createChannel(name, player);
-//      }
-//    }
-    
     if(cmd.getName().equalsIgnoreCase("scc")){
       sender.sendMessage(ChatColor.GOLD + "--- SimpleChatChannels " + getDescription().getVersion() + " ---");
       sender.sendMessage(ChatColor.BLUE + "/addchan <ChannelName> [locked] " + ChatColor.WHITE + "- Create a channel");
@@ -138,17 +137,18 @@ public class Loader extends JavaPlugin {
       sender.sendMessage(ChatColor.BLUE + "/addowner <ChannelName> <PlayerName> " + ChatColor.WHITE + "- Add an owner");
       sender.sendMessage(ChatColor.BLUE + "/delowner <ChannelName> <PlayerName> " + ChatColor.WHITE + "- Remove an owner");
       sender.sendMessage(ChatColor.BLUE + "/chanlist <channelname> [owner] " + ChatColor.WHITE + "- List channel users");
-      sender.sendMessage(ChatColor.BLUE + "/kuser <channelname> <PlayerName> " + ChatColor.WHITE + "- Kick user from a channel");
-      sender.sendMessage(ChatColor.BLUE + "/adduser <ChannelName> <PlayerName> " + ChatColor.WHITE + "- Add a user to a locked channel's Access List");
-      sender.sendMessage(ChatColor.BLUE + "/deluser <ChannelName> <PlayerName> " + ChatColor.WHITE + "- Remove a user from a locked channel's Access List");
-      
-//      sender.sendMessage(ChatColor.BLUE + "/schat <channelname>" + ChatColor.WHITE + "Join/Leave a channel you've access to");
-//      sender.sendMessage(ChatColor.BLUE + "/schat <channelname> <message> " + ChatColor.WHITE + "Message channel users");
+      sender.sendMessage(ChatColor.BLUE + "/kuser <ChannelnNme> <PlayerName> " + ChatColor.WHITE + "- Kick user from a chan");
+      sender.sendMessage(ChatColor.BLUE + "/adduser <ChannelName> <PlayerName> " + ChatColor.WHITE + "- Add user to a locked chan's Access List");
+      sender.sendMessage(ChatColor.BLUE + "/deluser <ChannelName> <PlayerName> " + ChatColor.WHITE + "- Remove user from a locked chan's Access List");
       return true;      
     }
     
 // CHANNEL MANIPULATION
-    if(cmd.getName().equalsIgnoreCase("addchan")){      
+    if(cmd.getName().equalsIgnoreCase("addchan")){
+      if (player == null) {
+        sender.sendMessage("This command can only be run by a player");
+        return true;
+      }
       if (args.length == 1) {     
       String ChanName = args[0];
       if (getStorageConfig().contains(ChanName)) {
@@ -221,44 +221,46 @@ public class Loader extends JavaPlugin {
       String ChanName = args[0];
       List<String> ChowList = getStorageConfig().getStringList(ChanName+".owner");
       List<String> ChannelsList = getStorageConfig().getStringList("Channels"); // create/get the channel list
-      if (!ChowList.contains(player.getName()) && !player.hasPermission("scc.admin")) {
+      if (player == null || ChowList.contains(player.getName()) && player.hasPermission("scc.admin")) {
+        if (!getStorageConfig().contains(ChanName)) {
+          sender.sendMessage(RED + ChanName + GRAY + " does not exist");
+          return true;
+        }
+        List<String> ChanList = getStorageConfig().getStringList(ChanName+".list");
+        for(Player op: players){
+          if(ChanList.contains(op.getName())) {
+            if(player == null) {
+              op.sendMessage(RED + "* " + ChanName + GRAY + " has been deleted by " + RED + "Console" );
+            } else {
+            op.sendMessage(RED + "* " + ChanName + GRAY + " has been deleted by " + RED + player.getDisplayName() );              
+          }
+          }
+        }
+        getStorageConfig().set(ChanName, null); // delete the channel
+        ChannelsList.remove(ChanName);
+        getStorageConfig().set("Channels", ChannelsList); // set the new list
+        saveStorageConfig();
+        sender.sendMessage(GRAY + "Channel " + RED + "#" + ChanName + GRAY + " Deleted");
+
+        for(Player op: players){
+          if(ChanList.contains(op.getName())) {
+            if(pluginEnabled.containsKey(op)){
+              if(pluginEnabled.get(op)){
+                pluginEnabled.put(op, false);
+                pluginEnabled.remove(op);
+              }
+            }                
+          }
+        }
+        return true;
+      } else {
         sender.sendMessage(GRAY + "You are not an owner of " + RED + "#" + ChanName);
         return true;
       }
-      if (!getStorageConfig().contains(ChanName)) {
-        sender.sendMessage(RED + ChanName + GRAY + " does not exist");
-        return true;
-      }
-      List<String> ChanList = getStorageConfig().getStringList(ChanName+".list");
-      for(Player op: players){
-        if(ChanList.contains(op.getName())) {
-          op.sendMessage(RED + "* " + ChanName + GRAY + " has been deleted by " + RED + player.getDisplayName() );              
-        }
-      }
-      getStorageConfig().set(ChanName, null); // delete the channel
-      ChannelsList.remove(ChanName);
-      getStorageConfig().set("Channels", ChannelsList); // set the new list
-      saveStorageConfig();
-      sender.sendMessage(GRAY + "Channel " + RED + "#" + ChanName + GRAY + " Deleted");
-
-      for(Player op: players){
-        if(ChanList.contains(op.getName())) {
-          if(pluginEnabled.containsKey(op)){
-            if(pluginEnabled.get(op)){
-              pluginEnabled.put(op, false);
-              pluginEnabled.remove(op);
-            }
-          }                
-        }
-      }
-      return true;
-    }
+    }    
 
 
     if(cmd.getName().equalsIgnoreCase("chanlist")){
-      if(!player.hasPermission("scc.chanlist")) {
-        sender.sendMessage(RED + "No Permission");
-      }
       if(args.length == 0) {
         List<String> ChannelsList = getStorageConfig().getStringList("Channels"); // create/get the channel list
         sender.sendMessage(ChatColor.GOLD + "--- Channel List ---");
@@ -342,8 +344,6 @@ public class Loader extends JavaPlugin {
           getStorageConfig().set(ChanName+".acclist.", ChList); // set the new list
           saveStorageConfig();
           sender.sendMessage(GREEN + AddPlayName + GRAY + " added to " + GREEN + "#" + ChanName + "'s" + GRAY + " access list");
-//          Player target = this.getServer().getPlayer(AddPlayName);
-//          if(target != null) { target.sendMessage(GREEN + "* " + GRAY + "You have been added to " + GREEN + "#" + ChanName + "'s" + GRAY + " user list"); }
           List<String> ChanList = getStorageConfig().getStringList(ChanName+".list");
           for(Player op: players){
             if(ChanList.contains(op.getName())) {
@@ -376,7 +376,7 @@ public class Loader extends JavaPlugin {
     } else {
       List<String> ChList = getStorageConfig().getStringList(ChanName+".acclist"); // get the player list
       if (!ChList.contains(AddPlayName)) {
-        sender.sendMessage(RED + AddPlayName + GRAY + " is not in" + RED + "#" + ChanName);
+        sender.sendMessage(RED + AddPlayName + GRAY + " is not in " + RED + "#" + ChanName);
         return true;
       } else {
         ChList.remove(AddPlayName);  // remove the player from the access list
@@ -397,46 +397,51 @@ public class Loader extends JavaPlugin {
   }
   
   
-if(cmd.getName().equalsIgnoreCase("kuser")){
-  if(args.length != 2){
-    sender.sendMessage("/kuser <ChannelName> <PlayerName>");
-    return true;
-  }
-  String ChanName = args[0];
-  String AddPlayName = myGetPlayerName(args[1]);
-  List<String> ChowList = getStorageConfig().getStringList(ChanName+".owner");
-  if (!ChowList.contains(player.getName()) && !player.hasPermission("scc.admin") && AddPlayName != args[1]) {
-    sender.sendMessage(GRAY + "You are not an owner of " + RED + "#" + ChanName);
-    return true;
-  }
-  boolean ChanTemp = getStorageConfig().contains(ChanName);
-  if(ChanTemp == false) {
-    sender.sendMessage(RED + ChanName + GRAY + " does not exist");
-    return true;
-  } else {
-    List<String> ChList = getStorageConfig().getStringList(ChanName+".list"); // get the player list
-    if (!ChList.contains(AddPlayName)) {
-      sender.sendMessage(RED + AddPlayName + GRAY + " is not in" + RED + "#" + ChanName);
+  if(cmd.getName().equalsIgnoreCase("kuser")){
+    if(args.length != 2){
+      sender.sendMessage("/kuser <ChannelName> <PlayerName>");
       return true;
-    } else {
-      ChList.remove(AddPlayName);  // remove the player from the list
-      getStorageConfig().set(ChanName+".list.", ChList); // set the new list
-      saveStorageConfig();
-      sender.sendMessage(RED + AddPlayName + GRAY + " removed from " + RED + "#" + ChanName + "'s" + GRAY + " user list");
-      Player target = this.getServer().getPlayer(AddPlayName);
-      if(target != null) { target.sendMessage(RED + "* " + GRAY + "You have been removed from " + RED + "#" + ChanName + "'s" + GRAY + " user list"); }
-      List<String> ChanList = getStorageConfig().getStringList(ChanName+".list");
-      for(Player op: players){
-        if(ChanList.contains(op.getName())) {
-          op.sendMessage(RED + "* " + AddPlayName + GRAY + " has been removed from" + RED + " #" + ChanName + GRAY + " by " + player.getDisplayName());              
+    }
+    String ChanName = args[0];
+    String AddPlayName = myGetPlayerName(args[1]);
+    List<String> ChowList = getStorageConfig().getStringList(ChanName+".owner");
+    if (player == null || ChowList.contains(player.getName()) && player.hasPermission("scc.admin") && AddPlayName == args[1]) {
+      boolean ChanTemp = getStorageConfig().contains(ChanName);
+      if(ChanTemp == false) {
+        sender.sendMessage(RED + "#" + ChanName + GRAY + " does not exist");
+        return true;
+      } else {
+        List<String> ChList = getStorageConfig().getStringList(ChanName+".list"); // get the player list
+        if (!ChList.contains(AddPlayName)) {
+          sender.sendMessage(RED + AddPlayName + GRAY + " is not in " + RED + "#" + ChanName);
+          return true;
+        } else {
+          ChList.remove(AddPlayName);  // remove the player from the list
+          getStorageConfig().set(ChanName+".list.", ChList); // set the new list
+          saveStorageConfig();
+          sender.sendMessage(RED + AddPlayName + GRAY + " removed from " + RED + "#" + ChanName + "'s" + GRAY + " user list");
+          Player target = this.getServer().getPlayer(AddPlayName);
+          if(target != null) { target.sendMessage(RED + "* " + GRAY + "You have been removed from " + RED + "#" + ChanName + "'s" + GRAY + " user list"); }
+          List<String> ChanList = getStorageConfig().getStringList(ChanName+".list");
+          for(Player op: players){
+            if(ChanList.contains(op.getName())) {
+              op.sendMessage(RED + "* " + AddPlayName + GRAY + " has been removed from" + RED + " #" + ChanName + GRAY + " by " + player.getDisplayName());              
+            }
+          }
+          return true;
         }
       }
+    } else {
+      sender.sendMessage(GRAY + "You are not an owner of " + RED + "#" + ChanName);
       return true;
     }
   }
-}
 
     if(cmd.getName().equalsIgnoreCase("joinchan")){
+      if (player == null) {
+        sender.sendMessage("This command can only be run by a player");
+        return true;
+      }
       String ChanName = args[0];
       boolean ChanTemp = getStorageConfig().contains(ChanName);
       if(ChanTemp == false) {
@@ -488,6 +493,10 @@ if(cmd.getName().equalsIgnoreCase("kuser")){
     }
 
     if(cmd.getName().equalsIgnoreCase("partchan")){
+      if (player == null) {
+        sender.sendMessage("This command can only be run by a player");
+        return true;
+      }
       String ChanName = args[0];
       boolean ChanTemp = getStorageConfig().contains(ChanName);
       if(ChanTemp == false) {
@@ -523,7 +532,7 @@ if(cmd.getName().equalsIgnoreCase("kuser")){
     }
 
  
-// OWNER MANIPULATION    
+    // OWNER MANIPULATION    
     if(cmd.getName().equalsIgnoreCase("addowner")){
       if(args.length != 2){
         sender.sendMessage("/addowner <ChannelName> <PlayerName>");
@@ -531,28 +540,29 @@ if(cmd.getName().equalsIgnoreCase("kuser")){
       }      
       String ChanName = args[0];
       List<String> ChowList = getStorageConfig().getStringList(ChanName+".owner");
-      if (!ChowList.contains(player.getName()) && !player.hasPermission("scc.admin")) {
+      if (player == null || ChowList.contains(player.getName()) && player.hasPermission("scc.admin")) {
+        String AddPlayName = myGetPlayerName(args[1]);
+        boolean ChanTemp = getStorageConfig().contains(ChanName);
+        if(ChanTemp == false) {
+          sender.sendMessage(RED + ChanName + GRAY + " does not exist");
+          return true;
+        } else {        
+          if (ChowList.contains(AddPlayName)) {
+            sender.sendMessage(RED + AddPlayName + GRAY + " is already an owner of " + RED + "#" + ChanName);
+            return true;
+          } else {
+            ChowList.add(AddPlayName);  // add the player to the list
+            getStorageConfig().set(ChanName+".owner.", ChowList); // set the new list
+            sender.sendMessage(GREEN + AddPlayName + GRAY + " added to " + GREEN + "#" + ChanName + "'s" + GRAY + " owner list");
+            Player target = this.getServer().getPlayer(AddPlayName);
+            if(target != null) { target.sendMessage(GREEN + "* " + GRAY + "You have been added to " + GREEN + "#" + ChanName + "'s" + GRAY + " owner list"); }
+            saveStorageConfig();
+            return true;
+          }
+        }
+      } else {
         sender.sendMessage(GRAY + "You are not an owner of " + RED + "#" + ChanName);
         return true;
-      }
-      String AddPlayName = myGetPlayerName(args[1]);
-      boolean ChanTemp = getStorageConfig().contains(ChanName);
-      if(ChanTemp == false) {
-        sender.sendMessage(RED + ChanName + GRAY + " does not exist");
-        return true;
-      } else {        
-        if (ChowList.contains(AddPlayName)) {
-          sender.sendMessage(RED + AddPlayName + GRAY + " is already an owner of " + RED + "#" + ChanName);
-          return true;
-        } else {
-          ChowList.add(AddPlayName);  // add the player to the list
-          getStorageConfig().set(ChanName+".owner.", ChowList); // set the new list
-          sender.sendMessage(GREEN + AddPlayName + GRAY + " added to " + GREEN + "#" + ChanName + "'s" + GRAY + " owner list");
-          Player target = this.getServer().getPlayer(AddPlayName);
-          if(target != null) { target.sendMessage(GREEN + "* " + GRAY + "You have been added to " + GREEN + "#" + ChanName + "'s" + GRAY + " owner list"); }
-          saveStorageConfig();
-          return true;
-        }
       }
     }
     
@@ -563,28 +573,29 @@ if(cmd.getName().equalsIgnoreCase("kuser")){
       }
       String ChanName = args[0];
       List<String> ChowList = getStorageConfig().getStringList(ChanName+".owner");
-      if (!ChowList.contains(player.getName()) && !player.hasPermission("scc.admin")) {
+      if (player == null || ChowList.contains(player.getName()) && player.hasPermission("scc.admin")) {
+        String AddPlayName = myGetPlayerName(args[1]);
+        boolean ChanTemp = getStorageConfig().contains(ChanName);
+        if(ChanTemp == false) {
+          sender.sendMessage(RED + ChanName + GRAY + " does not exist");
+          return true;
+        } else {        
+          if (!ChowList.contains(AddPlayName)) {
+            sender.sendMessage(RED + AddPlayName + GRAY + " is not an owner of " + RED + "#" + ChanName);
+            return true;
+          } else {
+            ChowList.remove(AddPlayName);  // remove the player from the list
+            getStorageConfig().set(ChanName+".owner.", ChowList); // set the new list          
+            sender.sendMessage(RED + AddPlayName + GRAY + " removed From " + RED + "#" + ChanName + "'s" + GRAY + " owner list");
+            Player target = this.getServer().getPlayer(AddPlayName);
+            target.sendMessage(RED + "* " + GRAY + "You have been removed from " + RED + "#" + ChanName + "'s" + GRAY + " owner list");
+            saveStorageConfig();
+            return true;
+          }
+        }
+      } else {
         sender.sendMessage(GRAY + "You are not an owner of " + RED + "#" + ChanName);
         return true;
-      }
-      String AddPlayName = myGetPlayerName(args[1]);
-      boolean ChanTemp = getStorageConfig().contains(ChanName);
-      if(ChanTemp == false) {
-        sender.sendMessage(RED + ChanName + GRAY + " does not exist");
-        return true;
-      } else {        
-        if (!ChowList.contains(AddPlayName)) {
-          sender.sendMessage(RED + AddPlayName + GRAY + " is not an owner of " + RED + "#" + ChanName);
-          return true;
-        } else {
-          ChowList.remove(AddPlayName);  // remove the player from the list
-          getStorageConfig().set(ChanName+".owner.", ChowList); // set the new list          
-          sender.sendMessage(RED + AddPlayName + GRAY + " removed From " + RED + "#" + ChanName + "'s" + GRAY + " owner list");
-          Player target = this.getServer().getPlayer(AddPlayName);
-          target.sendMessage(RED + "* " + GRAY + "You have been removed from " + RED + "#" + ChanName + "'s" + GRAY + " owner list");
-          saveStorageConfig();
-          return true;
-        }
       }
     }
     
