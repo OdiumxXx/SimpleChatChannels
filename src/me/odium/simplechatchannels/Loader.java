@@ -254,7 +254,7 @@ public class Loader extends JavaPlugin {
       List<String> ChowList = getStorageConfig().getStringList(ChanName+".owner");
       List<String> ChannelsList = getStorageConfig().getStringList("Channels"); // create/get the channel list
       List<String> InChatList = getStorageConfig().getStringList("InChatList"); // get the player list
-      if (player == null || ChowList.contains(player.getName()) && player.hasPermission("scc.admin")) {
+      if (player == null || ChowList.contains(player.getName()) || player.hasPermission("scc.admin")) {
         if (!getStorageConfig().contains(ChanName)) {
           sender.sendMessage(RED + ChanName + GRAY + " does not exist");
           return true;
