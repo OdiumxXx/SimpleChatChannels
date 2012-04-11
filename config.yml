@@ -1,0 +1,5 @@
+# SimpleChatChannels
+# Big thanks to GJ, TheElitFour and Lord_Ralex for their help beating out the bugs.
+# SilenceGeneralChat - set to true if you wish to silence general server chat when in a chat channel.
+#  
+SilenceGeneralChat: true
