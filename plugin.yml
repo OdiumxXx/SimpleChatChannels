@@ -49,5 +49,5 @@ commands:
       usage: /chanlist [channelname] [owner/access]
    fixchans:
       description: Fix Channel Records (pre0.5)
-      permission: scc.fixchans
+      permission: scc.admin
       usage: /fixchans
