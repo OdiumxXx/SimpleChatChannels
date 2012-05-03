@@ -158,7 +158,7 @@ public class Loader extends JavaPlugin {
 
         sender.sendMessage(ChatColor.GOLD + "/adduser <ChannelName> <PlayerName> " + ChatColor.WHITE + "- Add user to a locked chan's Access List");
         sender.sendMessage(ChatColor.GOLD + "/deluser <ChannelName> <PlayerName> " + ChatColor.WHITE + "- Remove user from a locked chan's Access List");
-        if(player == null || player.hasPermission("scc.admin")) {
+        if(player == null || player.hasPermission("scc.reload")) {
           sender.sendMessage(ChatColor.RED + "/scc reload " + ChatColor.WHITE + "- Reload the config");
           sender.sendMessage(ChatColor.RED + "/fixchans " + ChatColor.WHITE + "- Fix ChannelNames (Upgrading from earlier version)");
         }
