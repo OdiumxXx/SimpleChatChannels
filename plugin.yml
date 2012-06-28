@@ -1,9 +1,10 @@
 name: SimpleChatChannels
 main: me.odium.simplechatchannels.Loader
-version: 0.6
+version: 0.7
 description: Simple Chat Channels
 commands:
    scc:
+      aliases: [SimpleChatChannels]
       description: SimpleChatChannels Main Menu
       permission:
       usage: /scc
@@ -20,6 +21,7 @@ commands:
       permission: scc.join
       usage: /joinchan <channelname>
    partchan:
+      aliases: [leavechan]
       description: Part the channel you're in
       permission: scc.join
       usage: /partchan <channelname>
@@ -44,10 +46,7 @@ commands:
       permission:
       usage: /delowner <channelname> <playername>
    chanlist:
+      aliases: [channels]
       description: Channels List
       permission: scc.chanlist
       usage: /chanlist [channelname] [owner/access]
-   fixchans:
-      description: Fix Channel Records (pre0.5)
-      permission: scc.admin
-      usage: /fixchans
