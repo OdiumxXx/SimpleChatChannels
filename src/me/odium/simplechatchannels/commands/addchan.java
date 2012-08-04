@@ -71,7 +71,7 @@ public class addchan implements CommandExecutor {
       }
       return true;
     } else if (args.length == 2 && args[0].equalsIgnoreCase("-l")) {
-      String ChanName = args[0].toLowerCase();
+      String ChanName = args[1].toLowerCase();
       String PlayerName = player.getName().toLowerCase();
       Boolean bool = true;
       if (plugin.getStorageConfig().contains(ChanName)) {

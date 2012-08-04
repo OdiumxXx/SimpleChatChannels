@@ -11,7 +11,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 public class ServerChatPlayerListener implements Listener {
   public static Loader plugin;
@@ -22,7 +22,7 @@ public class ServerChatPlayerListener implements Listener {
   }
 
   @EventHandler
-  public void onPlayerChat(PlayerChatEvent chat) {
+  public void onPlayerChat(AsyncPlayerChatEvent chat) {
     Player player = chat.getPlayer();
     if (plugin.getConfig().getBoolean("SilenceGeneralChat")) {
       if (!plugin.getStorageConfig().getStringList("InChatList").contains(player.getName().toLowerCase())) {
