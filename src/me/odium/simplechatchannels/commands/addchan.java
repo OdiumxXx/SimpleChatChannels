@@ -37,8 +37,15 @@ public class addchan implements CommandExecutor {
     } else if (args.length == 1) {     
       String ChanName = args[0].toLowerCase(); 
       String PlayerName = player.getName().toLowerCase();
+      // CHECK IF PLAYER IS IN A CHANNEL
+      if (plugin.ChannelMap.containsKey(player)) {
+        String channel = plugin.ChannelMap.get(player);
+        sender.sendMessage(plugin.DARK_RED+"[SCC] Cannot create a channel while in "+plugin.GOLD+channel);
+        return true;
+      }
+      // CHECK IF CHANNEL EXISTS
       if (plugin.getStorageConfig().contains(ChanName)) {
-        sender.sendMessage(plugin.DARK_GREEN+"[SCC] "+plugin.RED + ChanName + plugin.DARK_GREEN+ " already exists");
+        sender.sendMessage(plugin.DARK_RED+"[SCC] "+plugin.GOLD + ChanName + plugin.DARK_RED+ " already exists");
         return true;
       }
       plugin.getStorageConfig().createSection(ChanName); // create the 'channel'
@@ -46,22 +53,19 @@ public class addchan implements CommandExecutor {
       List<String> OwList = plugin.getStorageConfig().getStringList(ChanName+".owner"); // create/get the owner list
       List<String> AccList = plugin.getStorageConfig().getStringList(ChanName+".AccList"); // create/get the owner list
       List<String> ChannelsList = plugin.getStorageConfig().getStringList("Channels"); // create/get the owner list
-      List<String> InChatList = plugin.getStorageConfig().getStringList("InChatList"); // get the player list
       ChList.add(PlayerName);  // add the player to the list
       OwList.add(PlayerName);  // add the player to the owner list
       AccList.add(PlayerName);  // add the player to the access list
       ChannelsList.add(ChanName);
-      InChatList.add(PlayerName);  // add the player to the list      
       plugin.getStorageConfig().set(ChanName+".list", ChList); // set the new list
       plugin.getStorageConfig().set(ChanName+".owner", OwList); // set the new list
       plugin.getStorageConfig().set(ChanName+".AccList", AccList); // set the new list
       plugin.getStorageConfig().set(ChanName+".Locked", false); // set the new list
       plugin.getStorageConfig().set("Channels", ChannelsList); // set the new list  
-      plugin.getStorageConfig().set("InChatList", InChatList); // set the new list
       plugin.saveStorageConfig();
-      sender.sendMessage(plugin.DARK_GREEN+"[SCC] "+ plugin.GREEN +  ChanName + plugin.DARK_GREEN + " Created");
-      plugin.ChannelThing.put(player, ChanName);
-      plugin.pluginEnabled.put(player, true);
+      sender.sendMessage(plugin.DARK_GREEN+"[SCC] "+ plugin.GOLD +  ChanName + plugin.DARK_GREEN + " Created");
+      plugin.ChannelMap.put(player, ChanName);
+      plugin.InChannel.put(player, true);
       List<String> ChanList = plugin.getStorageConfig().getStringList(ChanName+".list");
 
       for(Player op: players){
@@ -74,8 +78,15 @@ public class addchan implements CommandExecutor {
       String ChanName = args[1].toLowerCase();
       String PlayerName = player.getName().toLowerCase();
       Boolean bool = true;
+      // CHECK IF PLAYER IS IN A CHANNEL
+      if (plugin.ChannelMap.containsKey(player)) {
+        String channel = plugin.ChannelMap.get(player);
+        sender.sendMessage(plugin.DARK_RED+"[SCC] Cannot create a channel while in "+plugin.GOLD+channel);
+        return true;
+      }
+      // CHECK IF CHANNEL EXISTS
       if (plugin.getStorageConfig().contains(ChanName)) {
-        sender.sendMessage(plugin.DARK_GREEN+"[SCC] "+plugin.RED + ChanName + plugin.DARK_GREEN+ " already exists");
+        sender.sendMessage(plugin.DARK_RED+"[SCC] "+plugin.GOLD + ChanName + plugin.DARK_RED+ " already exists");
         return true;
       }
       plugin.getStorageConfig().createSection(ChanName); // create the 'channel'
@@ -83,23 +94,27 @@ public class addchan implements CommandExecutor {
       List<String> OwList = plugin.getStorageConfig().getStringList(ChanName+".owner"); // create/get the owner list
       List<String> AccList = plugin.getStorageConfig().getStringList(ChanName+".AccList"); // create/get the owner list
       List<String> ChannelsList = plugin.getStorageConfig().getStringList("Channels"); // create/get the owner list
-      List<String> InChatList = plugin.getStorageConfig().getStringList("InChatList"); // get the player list
       ChList.add(PlayerName);  // add the player to the list
       OwList.add(PlayerName);  // add the player to the owner list
       AccList.add(PlayerName);  // add the player to the access list
       ChannelsList.add(ChanName);
-      InChatList.add(PlayerName);  // add the player to the list
       plugin.getStorageConfig().set(ChanName+".list", ChList); // set the new list
       plugin.getStorageConfig().set(ChanName+".owner", OwList); // set the new list
       plugin.getStorageConfig().set(ChanName+".AccList", AccList); // set the new list
       plugin.getStorageConfig().set(ChanName+".locked", bool); // set the new list
       plugin.getStorageConfig().set("Channels", ChannelsList); // set the new list
-      plugin.getStorageConfig().set("InChatList", InChatList); // set the new list
       plugin.saveStorageConfig();
-      sender.sendMessage(plugin.DARK_GREEN+"[SCC] "+"Locked Channel " + plugin.GREEN + ChanName + plugin.DARK_GREEN + " Created");
-      plugin.ChannelThing.put(player, ChanName);
-      plugin.pluginEnabled.put(player, true);
+      sender.sendMessage(plugin.DARK_GREEN+"[SCC] "+"Locked Channel " + plugin.GOLD + ChanName + plugin.DARK_GREEN + " Created");
+      plugin.ChannelMap.put(player, ChanName);
+      plugin.InChannel.put(player, true);
       List<String> ChanList = plugin.getStorageConfig().getStringList(ChanName+".list");
+      //      NOTIFY SERVER OF A CHAT JOIN
+      for (Player user: players) { // for all players
+        if (!plugin.InChannel.containsKey(user)) { // if player is not in a channel
+          user.sendMessage(plugin.DARK_GREEN+"[SCC] "+ ChatColor.GOLD + PlayerName + ChatColor.DARK_GREEN+" has left general chat");
+          plugin.log.info(plugin.DARK_GREEN+"[SCC] "+ ChatColor.GOLD + PlayerName + ChatColor.DARK_GREEN+" has left general chat");
+        }
+      }   
       for(Player op: players){
         if(ChanList.contains(op.getName())) {
           op.sendMessage(plugin.DARK_GREEN+"[SCC] "+ ChatColor.GOLD + PlayerName + ChatColor.DARK_GREEN+" joined "+ ChanName);

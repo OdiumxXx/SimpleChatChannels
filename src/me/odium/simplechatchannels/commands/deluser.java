@@ -24,41 +24,46 @@ public class deluser implements CommandExecutor {
       player = (Player) sender;
     }
     Player[] players = Bukkit.getOnlinePlayers();
+    String PlayerName;
 
     if(args.length != 2){
       sender.sendMessage("/deluser <ChannelName> <PlayerName>");
       return true;
     }
     String ChanName = args[0].toLowerCase();
-    String PlayerName = player.getName().toLowerCase();
-    String AddPlayName = plugin.myGetPlayerName(args[1]);
+    if (player != null) {
+      PlayerName = player.getName().toLowerCase();  
+    } else {
+      PlayerName = "Console";
+    }
+    String AddPlayName = plugin.myGetPlayerName(args[1]).toLowerCase();
     List<String> ChowList = plugin.getStorageConfig().getStringList(ChanName+".owner");
-    if (!ChowList.contains(PlayerName) && !player.hasPermission("scc.admin") && AddPlayName != args[1]) {
-      sender.sendMessage(plugin.DARK_GREEN+"[SCC] "+"You are not an owner of " + plugin.RED + ChanName);
+    if (player != null && !ChowList.contains(PlayerName) && !player.hasPermission("scc.admin") && AddPlayName != args[1]) {
+      plugin.NotOwner(sender, ChanName);
       return true;
     }
     boolean ChanTemp = plugin.getStorageConfig().contains(ChanName);
     if(ChanTemp == false) {
-      sender.sendMessage(plugin.DARK_GREEN+"[SCC] "+plugin.RED + ChanName + plugin.DARK_GREEN + " does not exist");
+      plugin.NotExist(sender, ChanName);
       return true;
     } else {
       List<String> ChList = plugin.getStorageConfig().getStringList(ChanName+".AccList"); // get the player list
       if (!ChList.contains(AddPlayName)) {
-        sender.sendMessage(plugin.DARK_GREEN+"[SCC] "+plugin.RED + AddPlayName + plugin.DARK_GREEN + " is not in " + plugin.RED + ChanName);
+        sender.sendMessage(plugin.DARK_RED+"[SCC] "+plugin.GOLD + AddPlayName + plugin.DARK_RED+ " is not in " + plugin.GOLD+  ChanName);
         return true;
       } else {
         ChList.remove(AddPlayName);  // remove the player from the access list
         plugin.getStorageConfig().set(ChanName+".AccList", ChList); // set the new access list
         plugin.saveStorageConfig();
-        sender.sendMessage(plugin.DARK_GREEN+"[SCC] "+plugin.GOLD + AddPlayName + plugin.DARK_GREEN + " removed from " + plugin.GREEN + ChanName + "'s" + plugin.DARK_GREEN + " access list");
+        sender.sendMessage(plugin.DARK_GREEN+"[SCC] "+plugin.GOLD + AddPlayName + plugin.DARK_GREEN + " removed from " + plugin.GOLD + ChanName + "'s" + plugin.DARK_GREEN + " access list");
         Player target = plugin.getServer().getPlayer(AddPlayName);
         if(target != null) {
-          target.sendMessage(plugin.DARK_GREEN+"[SCC] "+"You have been removed from " + plugin.GREEN + ChanName + "'s" + plugin.DARK_GREEN + " access list"); 
+          target.sendMessage(plugin.DARK_GREEN+"[SCC] "+"You have been removed from " + plugin.GOLD + ChanName + "'s" + plugin.DARK_GREEN + " access list"); 
           }
         List<String> ChanList = plugin.getStorageConfig().getStringList(ChanName+".AccList");
         for(Player op: players){
           if(ChanList.contains(op.getName())) {
-            op.sendMessage(plugin.DARK_GREEN+"[SCC] "+plugin.GOLD+ AddPlayName +plugin.DARK_GREEN + " has been removed from" + plugin.GREEN + " #" + ChanName + "'s " + plugin.DARK_GREEN + "acces list by " + PlayerName);              
+            op.sendMessage(plugin.DARK_GREEN+"[SCC] "+plugin.GOLD+ AddPlayName +plugin.DARK_GREEN + " has been removed from" + plugin.GOLD + ChanName + "'s " + plugin.DARK_GREEN + "acces list by " + PlayerName);              
           }
         }
         return true;

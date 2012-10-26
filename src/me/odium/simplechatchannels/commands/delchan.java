@@ -23,51 +23,41 @@ public class delchan implements CommandExecutor {
       player = (Player) sender;
     }    
     Player[] players = Bukkit.getOnlinePlayers();
+    String PlayerName;
 
     String ChanName = args[0].toLowerCase();
-    String PlayerName = player.getName().toLowerCase();
+    if (player != null) {
+      PlayerName = player.getName().toLowerCase();  
+    } else {
+      PlayerName = "Console";
+    }
     List<String> ChowList = plugin.getStorageConfig().getStringList(ChanName+".owner");
     List<String> ChannelsList = plugin.getStorageConfig().getStringList("Channels"); // create/get the channel list
-    List<String> InChatList = plugin.getStorageConfig().getStringList("InChatList"); // get the player list
+
     if (player == null || ChowList.contains(PlayerName) || player.hasPermission("scc.admin")) {
       if (!plugin.getStorageConfig().contains(ChanName)) {
-        sender.sendMessage(plugin.DARK_GREEN+"[SCC] "+"Channel " + plugin.RED + ChanName + plugin.DARK_GREEN + " does not exist");
+        plugin.NotExist(sender, ChanName);
         return true;
       }
       List<String> ChanList = plugin.getStorageConfig().getStringList(ChanName+".list");
       for(Player op: players){
-        if(ChanList.contains(op.getName())) {
+        if(ChanList.contains(op.getName().toLowerCase())) {
           if(player == null) {
-            op.sendMessage(plugin.DARK_GREEN+"[SCC] "+plugin.GREEN +ChanName + plugin.DARK_GREEN + " has been deleted by " + plugin.GREEN + "Console" );
+            op.sendMessage(plugin.DARK_GREEN+"[SCC] "+plugin.GOLD +ChanName + plugin.DARK_GREEN + " has been deleted by " + plugin.GOLD + "Console" );
           } else {
-            op.sendMessage(plugin.DARK_GREEN+"[SCC] "+plugin.GREEN +ChanName + plugin.DARK_GREEN + " has been deleted by " + plugin.GREEN + PlayerName );              
+            op.sendMessage(plugin.DARK_GREEN+"[SCC] "+plugin.GOLD +ChanName + plugin.DARK_GREEN + " has been deleted by " + plugin.GOLD + PlayerName );
+            plugin.toggleChannel(op, ChanName);
           }
         }
       }
       plugin.getStorageConfig().set(ChanName, null); // delete the channel
       ChannelsList.remove(ChanName);
       plugin.getStorageConfig().set("Channels", ChannelsList); // set the new list
-      plugin.saveStorageConfig();
-      sender.sendMessage(plugin.DARK_GREEN+"[SCC] "+plugin.DARK_GREEN + "Channel " + plugin.GREEN + ChanName + plugin.DARK_GREEN + " Deleted");
-
-      for(Player op: players){
-        if(ChanList.contains(op.getName())) {
-          if(plugin.pluginEnabled.containsKey(op)){
-            if(plugin.pluginEnabled.get(op)){
-              plugin.pluginEnabled.put(op, false);
-              plugin.pluginEnabled.remove(op);
-            }
-          }                
-        }
-        if(InChatList.contains(op.getName())) {
-          InChatList.remove(op.getName());
-          plugin.getStorageConfig().set("InChatList", InChatList); // set the new list
-          plugin.saveStorageConfig();
-        }
-      }
+      plugin.saveStorageConfig();      
+        sender.sendMessage(plugin.DARK_GREEN+"[SCC] "+plugin.GOLD +ChanName + plugin.DARK_GREEN + " has been deleted");
       return true;
     } else {
-      sender.sendMessage(plugin.DARK_GREEN+"[SCC] "+plugin.DARK_GREEN + "You are not an owner of " + plugin.GREEN + ChanName);
+      plugin.NotOwner(sender, ChanName);
       return true;
     }
   }

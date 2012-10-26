@@ -1,5 +1,19 @@
 # SimpleChatChannels
-# Big thanks to GJ, TheElitFour and Lord_Ralex for their help beating out the bugs.
-# SilenceGeneralChat - set to true if you wish to silence general server chat when in a chat channel.
-#  
+# `0 = Black  |  `1 = DarkGray
+# `2 = GRAY   |  `w = White
+# `r = Red    |  `R = DarkRed
+# `y = YELLOW |  `Y = Gold
+# `g = Green  |  `G = DarkGreen
+# `c = Cyan   |  `C = DarkCyan
+# `b = Blue   |  `B = DarkBlue
+# `p = Purple |  `P = DarkPurple
+# `channel = Channel Name
+# `player = Player Name
+# SilenceGeneralChat - Silence general server chat when in a chat channel.
+# PublicJoinPartMessaes - Broadcast join / part messages to whole server
+# ChatPrefix - Define the chat prefix for users in a channel
+#
 SilenceGeneralChat: true
+PublicJoinPartMessages: true
+ChatPrefix:
+  Prefix: '`2[`g`channel`2/`c`player`2]`w'
