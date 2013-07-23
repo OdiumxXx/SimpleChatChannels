@@ -20,6 +20,7 @@ import me.odium.simplechatchannels.commands.joinchan;
 import me.odium.simplechatchannels.commands.kuser;
 import me.odium.simplechatchannels.commands.partchan;
 import me.odium.simplechatchannels.commands.scc;
+import me.odium.simplechatchannels.commands.spychan;
 import me.odium.simplechatchannels.commands.topic;
 import me.odium.simplechatchannels.listeners.PListener;
 
@@ -51,6 +52,7 @@ public class Loader extends JavaPlugin {
 
   public Map<Player, String> ChannelMap = new HashMap<Player, String>();
   public Map<Player, Boolean> InChannel = new HashMap<Player, Boolean>();
+  public Map<Player, String> SpyMap = new HashMap<Player, String>();
   public int overRide = 0;
 
   // Custom Config  
@@ -132,6 +134,7 @@ public class Loader extends JavaPlugin {
     this.getCommand("partchan").setExecutor(new partchan(this));
     this.getCommand("scc").setExecutor(new scc(this));
     this.getCommand("topic").setExecutor(new topic(this));
+    this.getCommand("spychan").setExecutor(new spychan(this));
     log.info("[" + getDescription().getName() + "] " + getDescription().getVersion() + " enabled.");
   }
 
@@ -144,7 +147,6 @@ public class Loader extends JavaPlugin {
     }
     List<String> InChatList = getStorageConfig().getStringList("InChatList");
     InChatList.clear();
-    //    log.info("" + InChatList);
     getStorageConfig().set("InChatList", InChatList); // set the new list
     saveStorageConfig();
     PluginDescriptionFile pdfFile = this.getDescription();
@@ -172,30 +174,10 @@ public class Loader extends JavaPlugin {
   }
 
 
-  //  public void togglePluginState(Player player, String channelk){
-  //    if(InChannel.containsKey(player)){
-  //      if(InChannel.get(player)){
-  //        String Chan = plugin.ChannelMap.get(player); // get the channame 
-  //        InChannel.remove(player);
-  //        player.sendMessage(plugin.DARK_GREEN+"[SCC] "+ ChatColor.GOLD + player.getName() + ChatColor.DARK_GREEN+" left "+ Chan);
-  //      } else {
-  //        ChannelMap.put(player, channelk);
-  //        String Chan = plugin.ChannelMap.get(player);
-  //        InChannel.put(player, true);
-  //        player.sendMessage(plugin.DARK_GREEN+"[SCC] "+ ChatColor.GOLD + player.getName() + ChatColor.DARK_GREEN+" joined "+ Chan);
-  //      }
-  //    } else {
-  //      ChannelMap.put(player, channelk);
-  //      String Chan = ChannelMap.get(player);
-  //      log.info(Chan);
-  //      InChannel.put(player, true);
-  //      player.sendMessage(plugin.DARK_GREEN+"[SCC] "+ ChatColor.GOLD + player.getName() + ChatColor.DARK_GREEN+" joined "+ Chan);
-  //    }   
-  //  }
-
   public void toggleChannel(Player player, String channel){
     if (InChannel.containsKey(player)) { // IF PLAYER IS IN A CHANNEL
       String playerName = player.getName().toLowerCase(); // get the player name
+      String playerDisplayName = player.getDisplayName();
       Player[] players = Bukkit.getOnlinePlayers(); // get all online players
 
       InChannel.remove(player);
@@ -207,28 +189,29 @@ public class Loader extends JavaPlugin {
       saveStorageConfig(); 
 
       // NOTIFY USERS IN CHANNEL OF A PART
-      player.sendMessage(DARK_GREEN+"[SCC] "+ ChatColor.GOLD + playerName + ChatColor.DARK_GREEN+" left "+ channel);
+      player.sendMessage(DARK_GREEN+"[SCC] "+ ChatColor.GOLD + playerDisplayName + ChatColor.DARK_GREEN+" left "+ channel);
       List<String> ChanList = getStorageConfig().getStringList(channel+".list");
-      for(Player op: players){
-        if(ChanList.contains(op.getName())) {
-          op.sendMessage(DARK_GREEN+"[SCC] "+ ChatColor.GOLD + playerName + ChatColor.DARK_GREEN+" left "+ channel);
+      for(Player play : players){
+        if(ChanList.contains(play.getName())) {
+          play.sendMessage(DARK_GREEN+"[SCC] "+ ChatColor.GOLD + playerDisplayName + ChatColor.DARK_GREEN+" left "+ channel);
         }
       }
 
       //    NOTIFY SERVER OF A CHAT PART
-      if (getConfig().getBoolean("PublicJoinPartMessages")) {
-        for (Player user: players) { // for all players
+      if (getConfig().getBoolean("PublicJoinPartMessages") == true) {
+        for (Player user : players) { // for all players
           if (!InChannel.containsKey(user)) { // if player is not in a channel
-            user.sendMessage(DARK_GREEN+"[SCC] "+ ChatColor.GOLD + playerName + ChatColor.DARK_GREEN+" has joined general chat");
+            user.sendMessage(DARK_GREEN+"[SCC] "+ ChatColor.GOLD + playerDisplayName + ChatColor.DARK_GREEN+" has joined general chat");
           }
         }
       }      
-      log.info(DARK_GREEN+"[SCC] "+ ChatColor.GOLD + playerName + ChatColor.DARK_GREEN+" has joined general chat");
+      log.info(DARK_GREEN+"[SCC] "+ ChatColor.GOLD + playerDisplayName + ChatColor.DARK_GREEN+" has joined general chat");
       
 
     } else { // if player is not in  a channel
       String playerName = player.getName().toLowerCase(); // get the player name
       Player[] players = Bukkit.getOnlinePlayers(); // get all online players
+      String playerDisplayName = player.getDisplayName();
 
       InChannel.put(player, true);
       ChannelMap.put(player, channel);
@@ -239,20 +222,21 @@ public class Loader extends JavaPlugin {
       saveStorageConfig();
 
       //      NOTIFY SERVER OF A CHAT JOIN
-      if (getConfig().getBoolean("PublicJoinPartMessages")) {
-        for (Player user: players) { // for all players
+      if (getConfig().getBoolean("PublicJoinPartMessages") == true) {
+        for (Player user : players) { // for all players
           if (!InChannel.containsKey(user)) { // if player is not in a channel
-            user.sendMessage(DARK_GREEN+"[SCC] "+ ChatColor.GOLD + playerName + ChatColor.DARK_GREEN+" has left general chat");       
+            user.sendMessage(DARK_GREEN+"[SCC] "+ ChatColor.GOLD + playerDisplayName + ChatColor.DARK_GREEN+" has left general chat");       
           }
-        }          
+        }
+        log.info(DARK_GREEN+"[SCC] "+ ChatColor.GOLD + playerDisplayName + ChatColor.DARK_GREEN+" has left general chat");
       }
-      log.info(DARK_GREEN+"[SCC] "+ ChatColor.GOLD + playerName + ChatColor.DARK_GREEN+" has left general chat");
+      
       
       // NOTIFY USERS IN CHANNEL OF A JOIN
       List<String> ChanList = getStorageConfig().getStringList(channel+".list"); 
       for(Player op: players){
         if(ChanList.contains(op.getName().toLowerCase())) {
-          op.sendMessage(DARK_GREEN+"[SCC] "+ ChatColor.GOLD + playerName + ChatColor.DARK_GREEN+" joined "+ channel);              
+          op.sendMessage(DARK_GREEN+"[SCC] "+ ChatColor.GOLD + playerDisplayName + ChatColor.DARK_GREEN+" joined "+ channel);              
         }
       }
       // SHOW TOPIC
@@ -264,13 +248,17 @@ public class Loader extends JavaPlugin {
     }
   }
   
-  public String NotExist(CommandSender sender, String ChanName) {
+  public boolean NotExist(CommandSender sender, String ChanName) {
     sender.sendMessage(DARK_RED+"[SCC] Channel "+ChatColor.GOLD+ChanName+ChatColor.DARK_RED+" does not exist!");
-    return "ok";
+    return true;
   }
-  public String NotOwner(CommandSender sender, String ChanName) {
+  public boolean NotOwner(CommandSender sender, String ChanName) {
     sender.sendMessage(DARK_RED+"[SCC] "+ChatColor.DARK_RED+"you do not have owner access to: "+ChatColor.GOLD+ChanName);
-    return "ok";
+    return true;    
+  }
+  public boolean AlreadyInChannel(CommandSender sender) {
+    sender.sendMessage(DARK_RED+"[SCC] "+ChatColor.DARK_RED+"You are already in a channel");
+    return true;
   }
   
   

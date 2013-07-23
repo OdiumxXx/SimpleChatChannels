@@ -39,6 +39,9 @@ public class scc implements CommandExecutor {
       sender.sendMessage(ChatColor.GREEN + " /joinchan <channel> " + ChatColor.WHITE + "- Join a channel");
       sender.sendMessage(ChatColor.GREEN + " /partchan <channel> " + ChatColor.WHITE + "- Leave a channel");
       sender.sendMessage(ChatColor.GREEN + " /topic <channel> <topic> " + ChatColor.WHITE + "- Set a channel topic");
+      if (sender.hasPermission("scc.spychan")) {
+        sender.sendMessage(ChatColor.GREEN + " /spychan [channel] " + ChatColor.WHITE + "- Spy on all or a specific channel");
+      }
       return true;
     } else if (args.length == 2 && args[0].equalsIgnoreCase("help") && args[1].equalsIgnoreCase("users")) {
       sender.sendMessage(ChatColor.GOLD + "[ "+ChatColor.WHITE+"User Commands"+ChatColor.GOLD+" ]");

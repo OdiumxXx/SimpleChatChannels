@@ -42,6 +42,14 @@ public class joinchan implements CommandExecutor {
       plugin.NotExist(sender, ChanName);
       return true;
     } 
+    
+    
+    boolean playerInchannel = plugin.InChannel.containsKey(player);
+    if (playerInchannel == true) {
+      plugin.AlreadyInChannel(player);
+      return true;
+      
+    }
 
     // IF LOCKED CHANNEL
     if(plugin.getStorageConfig().getBoolean(ChanName+".locked") == true) { // if channel is locked
@@ -49,7 +57,7 @@ public class joinchan implements CommandExecutor {
       List<String> ChList = plugin.getStorageConfig().getStringList(ChanName+".list"); // get the player list
 
         if (ChList.contains(PlayerName)) { // if player is in player list
-          player.sendMessage(plugin.DARK_GREEN+"[SCC] "+ChatColor.GOLD+plugin.DARK_GREEN + "Already in "+ChatColor.GOLD+ChanName); // inform them already in chan
+          player.sendMessage(ChatColor.DARK_GREEN+"[SCC] "+ChatColor.GOLD+ChatColor.DARK_GREEN + "Already in "+ChatColor.GOLD+ChanName); // inform them already in chan
           return true;
         } else {
 
@@ -67,7 +75,7 @@ public class joinchan implements CommandExecutor {
 
       List<String> ChList = plugin.getStorageConfig().getStringList(ChanName+".list"); // get the player list
       if (ChList.contains(PlayerName)) {
-        player.sendMessage(plugin.DARK_GREEN+"[SCC] "+ChatColor.GOLD+plugin.DARK_GREEN + "Already in "+ChatColor.GOLD+ChanName);
+        player.sendMessage(ChatColor.DARK_GREEN+"[SCC] "+ChatColor.GOLD+ChatColor.DARK_GREEN + "Already in "+ChatColor.GOLD+ChanName);
         return true;
 
       } else {
