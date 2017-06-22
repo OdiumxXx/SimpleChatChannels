@@ -1,0 +1,26 @@
+0.7.2
+Updated for 1.3
+0.7.3
+- Bugfix: Players not leaving channel upon quit/disconnect
+0.7.4
+- Updated Menu
+- Updated Channels list
+- Added Channel topics
+- Added Configurable Chat Prefix
+- Added flag (-p) to chanlist for finding a user
+- Added configurable public notice on user joining/parting a chat channel
+0.7.5
+- Added /spychan command
+- Bugfix: Joining a channel while already in another channel 
+
+0.7.6
+- BugFix: Channel members not notified of a user parting the channel. 
+
+
+todo:
+    &nbsp;&bull; Colours in channel topic<br />
+    &nbsp;&bull; Paginated channels list
+    &nbsp;&bull; Option to list users in channel upon join
+    &nbsp;&bull; Option to join a default channel upon joining server
+    &nbsp;&bull; SQL + SQLite support
+

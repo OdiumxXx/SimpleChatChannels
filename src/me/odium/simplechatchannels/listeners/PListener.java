@@ -50,6 +50,7 @@ public class PListener implements Listener {
   }
 
 
+  
   @EventHandler(priority = EventPriority.LOW)
   public void onPlayerChat(AsyncPlayerChatEvent chat) {
     Player player = chat.getPlayer();
@@ -77,8 +78,9 @@ public class PListener implements Listener {
       List<String> ChanList = plugin.getStorageConfig().getStringList(Chan+".list"); // get the list of users in channel
 
       String prefixTemp = plugin.getConfig().getString("ChatPrefix.Prefix").replace("`player", player.getDisplayName()).replace("`channel", Chan);      
-      String prefix = plugin.replaceColorMacros(prefixTemp); 
+      String prefix = plugin.replaceColorMacros(prefixTemp);
 
+      
       for(Player op : players){        
         if (plugin.SpyMap.containsKey(op)) { // If player is using spychan
           if (plugin.SpyMap.get(op) == "all" || plugin.SpyMap.get(op).equalsIgnoreCase(Chan)) { // if player is spying on all or specific channel being used

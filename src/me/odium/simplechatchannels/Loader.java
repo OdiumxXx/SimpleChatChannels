@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
 import me.odium.simplechatchannels.commands.addchan;
 import me.odium.simplechatchannels.commands.addowner;
 import me.odium.simplechatchannels.commands.adduser;
@@ -37,7 +38,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class Loader extends JavaPlugin {
   public static Loader plugin;
   public Logger log = Logger.getLogger("Minecraft");
-
+  
+  
   //ColorMacros
   public ChatColor WHITE = ChatColor.WHITE;
   public ChatColor RED = ChatColor.RED;
@@ -138,6 +140,7 @@ public class Loader extends JavaPlugin {
     log.info("[" + getDescription().getName() + "] " + getDescription().getVersion() + " enabled.");
   }
 
+
   public void onDisable() {
     List<String> ChansList = getStorageConfig().getStringList("Channels"); // get the channels list    
     for(String ch: ChansList){
@@ -192,7 +195,7 @@ public class Loader extends JavaPlugin {
       player.sendMessage(DARK_GREEN+"[SCC] "+ ChatColor.GOLD + playerDisplayName + ChatColor.DARK_GREEN+" left "+ channel);
       List<String> ChanList = getStorageConfig().getStringList(channel+".list");
       for(Player play : players){
-        if(ChanList.contains(play.getName())) {
+        if(ChanList.contains(play.getName().toLowerCase())) {
           play.sendMessage(DARK_GREEN+"[SCC] "+ ChatColor.GOLD + playerDisplayName + ChatColor.DARK_GREEN+" left "+ channel);
         }
       }
@@ -234,9 +237,9 @@ public class Loader extends JavaPlugin {
       
       // NOTIFY USERS IN CHANNEL OF A JOIN
       List<String> ChanList = getStorageConfig().getStringList(channel+".list"); 
-      for(Player op: players){
-        if(ChanList.contains(op.getName().toLowerCase())) {
-          op.sendMessage(DARK_GREEN+"[SCC] "+ ChatColor.GOLD + playerDisplayName + ChatColor.DARK_GREEN+" joined "+ channel);              
+      for(Player play: players){
+        if(ChanList.contains(play.getName().toLowerCase())) {
+          play.sendMessage(DARK_GREEN+"[SCC] "+ ChatColor.GOLD + playerDisplayName + ChatColor.DARK_GREEN+" joined "+ channel);              
         }
       }
       // SHOW TOPIC
