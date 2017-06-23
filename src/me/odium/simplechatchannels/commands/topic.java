@@ -1,6 +1,7 @@
 package me.odium.simplechatchannels.commands;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import me.odium.simplechatchannels.Loader;
@@ -76,7 +77,7 @@ public class topic implements CommandExecutor {
         plugin.getStorageConfig().set(ChannelName+".topic", topicArgs); // Set the topic
         plugin.saveStorageConfig();
 
-        Player[] players = Bukkit.getOnlinePlayers(); // get all online players      
+        Collection<? extends Player> players = Bukkit.getOnlinePlayers(); // get all online players      
         for(Player op: players){
           if(plugin.ChannelMap.containsKey(op)) { // if the channel list contains the name of an online player 
             op.sendMessage(plugin.DARK_GREEN+"[SCC] "+ ChatColor.GOLD + playerName + ChatColor.DARK_GREEN+" Set topic for "+ChannelName+": "+ChatColor.WHITE+ topicArgs);

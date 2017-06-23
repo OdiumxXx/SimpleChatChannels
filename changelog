@@ -14,7 +14,8 @@ Updated for 1.3
 - Bugfix: Joining a channel while already in another channel 
 
 0.7.6
-- BugFix: Channel members not notified of a user parting the channel. 
+- BugFix: Channel members not notified of a user parting the channel.
+- Updated for Spigot API 1.10.2 
 
 
 todo:

@@ -3,6 +3,7 @@ package me.odium.simplechatchannels;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -181,7 +182,7 @@ public class Loader extends JavaPlugin {
     if (InChannel.containsKey(player)) { // IF PLAYER IS IN A CHANNEL
       String playerName = player.getName().toLowerCase(); // get the player name
       String playerDisplayName = player.getDisplayName();
-      Player[] players = Bukkit.getOnlinePlayers(); // get all online players
+      Collection<? extends Player> players = Bukkit.getOnlinePlayers(); // get all online players
 
       InChannel.remove(player);
       ChannelMap.remove(player);
@@ -213,7 +214,7 @@ public class Loader extends JavaPlugin {
 
     } else { // if player is not in  a channel
       String playerName = player.getName().toLowerCase(); // get the player name
-      Player[] players = Bukkit.getOnlinePlayers(); // get all online players
+      Collection<? extends Player> players = Bukkit.getOnlinePlayers(); // get all online players
       String playerDisplayName = player.getDisplayName();
 
       InChannel.put(player, true);

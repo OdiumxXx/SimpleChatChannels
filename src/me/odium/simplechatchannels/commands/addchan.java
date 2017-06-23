@@ -1,5 +1,6 @@
 package me.odium.simplechatchannels.commands;
 
+import java.util.Collection;
 import java.util.List;
 
 import me.odium.simplechatchannels.Loader;
@@ -25,7 +26,7 @@ public class addchan implements CommandExecutor {
       player = (Player) sender;
     }    
 
-    Player[] players = Bukkit.getOnlinePlayers();
+    Collection<? extends Player> players = Bukkit.getOnlinePlayers();
     if (player == null) {
       sender.sendMessage("This command can only be run by a player");
       return true;

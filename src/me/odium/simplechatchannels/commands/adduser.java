@@ -1,5 +1,6 @@
 package me.odium.simplechatchannels.commands;
 
+import java.util.Collection;
 import java.util.List;
 
 import me.odium.simplechatchannels.Loader;
@@ -23,7 +24,7 @@ public class adduser implements CommandExecutor {
     if (sender instanceof Player) {
       player = (Player) sender;
     }
-    Player[] players = Bukkit.getOnlinePlayers();
+    Collection<? extends Player> players = Bukkit.getOnlinePlayers();
     String PlayerName;
 
     if(args.length != 2){
