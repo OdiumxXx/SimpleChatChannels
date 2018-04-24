@@ -71,7 +71,7 @@ public class Loader extends JavaPlugin {
     // Look for defaults in the jar
     InputStream defConfigStream = getResource("StorageConfig.yml");
     if (defConfigStream != null) {
-      YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
+      YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(StorageConfigFile);
       StorageConfig.setDefaults(defConfig);
     }
   }

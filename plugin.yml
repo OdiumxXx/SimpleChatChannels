@@ -1,6 +1,6 @@
 name: SimpleChatChannels
 main: me.odium.simplechatchannels.Loader
-version: 0.7.6
+version: 0.7.7
 description: Simple Chat Channels
 commands:
    scc:
